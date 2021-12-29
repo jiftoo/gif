@@ -1,0 +1,7 @@
+html,
+body {
+	width: auto;
+	height: 100vh;
+	margin: 0;
+	background-image: url("../assets/backgroundnoise.png");
+}
