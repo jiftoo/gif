@@ -34,7 +34,7 @@ async function streamToString(stream) {
 
 app.use(cors());
 app.post(
-	"/gifcaptioner",
+	"/gif/backend",
 	express.raw({
 		limit: "54mb",
 		type: "image/*",
@@ -66,23 +66,3 @@ app.post(
 
 app.listen(8002);
 console.log("Listening");
-
-// server.on("request", (req, res) => {
-//     console.log("request!!")
-//     const connector = http.request({
-//         host: "uguu.se",
-//         path: '/api.php?d=upload-tool',
-//         method: 'POST',
-//         headers: req.headers,
-//         body: req.body
-//     }, (resp) => {
-//         resp.pipe(bl(function (err, data) {
-//             if (err) { return console.error(err) }
-//             data = data.toString()
-//             console.log(data)
-//         }));
-//         resp.pipe(res);
-//     });
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     req.pipe(connector);
-// })

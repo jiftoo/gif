@@ -73,7 +73,7 @@ export async function renderImage(mainImage: string, captionImage: string): Prom
 		blob = await renderStaticImage(caption, gif, canvas, newCaptionHeight, ctx);
 	}
 
-	const response = await fetch("https://www.jiftoo.dev/gifcaptioner", {
+	const response = await fetch("https://jiftoo.dev/gif/backend", {
 		method: "POST",
 		mode: "cors",
 		body: blob,
