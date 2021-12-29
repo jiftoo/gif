@@ -1,0 +1,19 @@
+{
+	"name": "gif-captioner-backend",
+	"version": "1.0.0",
+	"description": "",
+	"main": "main.js",
+	"scripts": {
+		"start": "NODE_ENV=production node --no-deprecation main.js",
+		"dev": "nodemon --no-deprecation main.js"
+	},
+	"dependencies": {
+		"cors": "^2.8.5",
+		"express": "^4.17.2",
+		"form-data": "^4.0.0",
+		"multer": "^1.4.4",
+		"node-fetch": "^3.1.0"
+	},
+	"author": "",
+	"license": "ISC"
+}

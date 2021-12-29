@@ -1,9 +1,8 @@
 // TODO: uninstall gif libraries
 
 import {GifReader} from "omggif";
+// @ts-ignore
 import GIF from "gif.js.optimized";
-import {saveAs} from "file-saver";
-import {upload} from "uguu-api";
 
 export async function loadGifFrames(gifUrl: string): Promise<[HTMLCanvasElement, number][]> {
 	const response = await fetch(gifUrl);
@@ -74,7 +73,7 @@ export async function renderImage(mainImage: string, captionImage: string): Prom
 		blob = await renderStaticImage(caption, gif, canvas, newCaptionHeight, ctx);
 	}
 
-	const response = await fetch("http://localhost:8002/uploadImage", {
+	const response = await fetch("https://www.jiftoo.dev/gifcaptioner", {
 		method: "POST",
 		mode: "cors",
 		body: blob,

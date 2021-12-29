@@ -1,7 +1,7 @@
 import html2canvas from "html2canvas";
-import {ChangeEvent, FormEvent, FormEventHandler, useEffect, useState} from "react";
+import { ChangeEvent, FormEventHandler, useState } from "react";
 import "./App.css";
-import {renderImage} from "./GifRenderer";
+import { renderImage } from "./GifRenderer";
 
 const getHeightAndWidthFromDataUrl = (dataURL: string | null) =>
 	new Promise<any>((resolve, reject) => {

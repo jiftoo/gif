@@ -34,9 +34,9 @@ async function streamToString(stream) {
 
 app.use(cors());
 app.post(
-	"/uploadImage",
+	"/gifcaptioner",
 	express.raw({
-		limit: "128mb",
+		limit: "54mb",
 		type: "image/*",
 	}),
 	async (req, resp) => {
@@ -53,9 +53,11 @@ app.post(
 		}).then((r) => r.text());
 
 		if (result.startsWith("http")) {
+			console.log(`Uploaded image: ${result}`);
 			resp.status(200);
 			resp.send(result);
 		} else {
+			console.error("Error uploading image!");
 			resp.status(500);
 			resp.send("Error");
 		}
@@ -63,6 +65,7 @@ app.post(
 );
 
 app.listen(8002);
+console.log("Listening");
 
 // server.on("request", (req, res) => {
 //     console.log("request!!")
