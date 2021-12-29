@@ -70,6 +70,23 @@
 	transform: scale(101%);
 }
 
+#frame.drag {
+	animation: frame-wiggle;
+	animation-iteration-count: infinite;
+	animation-direction: alternate-reverse;
+	animation-timing-function: ease-in-out;
+	animation-duration: 500ms;
+}
+
+@keyframes frame-wiggle {
+	from {
+		transform: rotate(1deg);
+	}
+	to {
+		transform: rotate(-1deg);
+	}
+}
+
 #drop-area {
 	padding: 16px;
 	height: 100%;

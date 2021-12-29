@@ -33,7 +33,14 @@ function FrameSelector({onImageSelected}: FrameSelectorProps) {
 	};
 	return (
 		<label id="drop-area">
-			<div id="drop-area-caption">
+			<div
+				id="drop-area-caption"
+				onDragOver={(ev) => ev.preventDefault()}
+				onDrop={(ev) => {
+					ev.preventDefault();
+					fileInputHandler({target: {files: ev.dataTransfer.files}} as any);
+				}}
+			>
 				<div>Drop your gif here</div>
 				<div>or click to open file</div>
 			</div>
@@ -144,7 +151,19 @@ function Frame() {
 	};
 
 	return (
-		<div id="frame" className={imageSelected ? "editor" : "selector"}>
+		<div
+			id="frame"
+			className={imageSelected ? "editor" : "selector"}
+			onDragOver={(ev) => {
+                ev.preventDefault();
+				if (ev.dataTransfer.types.includes("Files")) {
+					ev.currentTarget.classList.add("drag");
+				}
+			}}
+			onDragLeave={(ev) => {
+				ev.currentTarget.classList.remove("drag");
+			}}
+		>
 			{imageSelected ? (
 				<FrameEditor
 					imageLinkState={imageLinkState}
