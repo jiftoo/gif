@@ -174,7 +174,7 @@ function FrameEditor({image, imageLink, imageLinkState, onTextChange, resetImage
 						Reset
 					</button>
 					<button id="save-button" onClick={saveImage}>
-						Save
+						Generate
 					</button>
 				</div>
 				{imageLinkState === ImageLinkState.PROCESSING && <div id="result-link">{"Creating image..."}</div>}

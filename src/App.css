@@ -129,7 +129,9 @@
 	border: none;
 	border-radius: 6px;
 	outline: none;
+	cursor: pointer;
 }
+
 #gif-url:focus {
 	box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.3);
 }
@@ -138,9 +140,9 @@
 }
 
 #url-error {
-    margin-top: 6px;
-    color: rgb(255, 70, 70);
-    font-size: 14px;
+	margin-top: 6px;
+	color: rgb(255, 70, 70);
+	font-size: 14px;
 }
 
 #edit-area {
@@ -197,12 +199,12 @@
 
 #control-buttons {
 	margin-top: 18px;
-	display: flex;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
 	justify-content: space-evenly;
 	gap: 32px;
 }
 #control-buttons button {
-	flex-grow: 1;
 	height: 42px;
 	border: none;
 	border-radius: 4px;
@@ -243,12 +245,19 @@
 }
 
 #ezgif-buttons {
-    margin-top: 18px;
-	display: flex;
+	margin-top: 18px;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
 	justify-content: center;
 	gap: 32px;
 }
 #ezgif-buttons > a {
 	padding: none;
 	display: block;
+}
+#ezgif-buttons > a:nth-child(1) {
+	text-align: right;
+}
+#ezgif-buttons > a:nth-child(2) {
+	text-align: left;
 }
