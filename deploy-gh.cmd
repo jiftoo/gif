@@ -1,4 +1,5 @@
 npm run build && ^
+echo www.jiftoo.dev > dist/CNAME && ^
 git add . && ^
 git commit -m "New deploy" && ^
 git push && ^
