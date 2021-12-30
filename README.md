@@ -1,5 +1,3 @@
-#gip-captioner
-
 ## Caption meme gifs easily xd
 
 <p float="left">
