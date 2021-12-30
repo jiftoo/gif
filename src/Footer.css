@@ -7,9 +7,3 @@
 	right: 6px;
 	bottom: 4px;
 }
-
-@media only screen and (max-width: 600px) {
-	#github-link {
-		position: static;
-	}
-}

@@ -86,20 +86,19 @@ function FrameSelector({onImageSelected}: FrameSelectorProps) {
 		setUrlErrorMessage(resultError);
 	};
 	return (
-		<label id="drop-area">
-			<div
-				id="drop-overlay"
-				style={{position: "absolute", top: 0, bottom: 0, left: 0, right: 0}}
-				onDragOver={(ev) => {
-					ev.preventDefault();
-				}}
-				onDrop={(ev) => {
-					ev.preventDefault();
-					if (ev.dataTransfer.files.length && ev.dataTransfer.files[0].type.startsWith("image/")) {
-						fileInputHandler({target: {files: ev.dataTransfer.files}} as any);
-					}
-				}}
-			></div>
+		<label
+			htmlFor="file-select-onclick"
+			id="drop-area"
+			onDragOver={(ev) => {
+				ev.preventDefault();
+			}}
+			onDrop={(ev) => {
+				ev.preventDefault();
+				if (ev.dataTransfer.files.length && ev.dataTransfer.files[0].type.startsWith("image/")) {
+					fileInputHandler({target: {files: ev.dataTransfer.files}} as any);
+				}
+			}}
+		>
 			<div id="drop-area-caption">
 				<div>Drop your gif here</div>
 				<div>or click to open file</div>
@@ -120,7 +119,17 @@ function FrameSelector({onImageSelected}: FrameSelectorProps) {
 				/>
 				{urlErrorMessage !== UrlErrorMessage.NONE && <div id="url-error">{urlErrorMessage}</div>}
 			</div>
-			<input type="file" accept="image/jpeg, image/png, image/gif" onChange={fileInputHandler} style={{display: "none"}}></input>
+			<input
+				id="file-select-onclick"
+				type="file"
+				accept="image/jpeg, image/png, image/gif"
+				onClick={(ev) => console.log(ev.target)}
+				onChange={(ev) => {
+					console.log(ev.target);
+					fileInputHandler(ev);
+				}}
+				style={{display: "none"}}
+			></input>
 		</label>
 	);
 }

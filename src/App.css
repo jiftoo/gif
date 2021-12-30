@@ -31,6 +31,9 @@
 	flex-direction: column;
 	/* justify-content: center; */
 	align-items: center;
+
+	padding-top: 32px;
+	padding-bottom: 32px;
 }
 
 #frame {
@@ -57,13 +60,9 @@
 	margin-right: 8px;
 }
 
-@media only screen and (max-height: 800px) {
+@media only screen and (max-height: 2000px) {
 	#frame.editor {
 		margin-top: auto;
-	}
-	#app {
-		padding-top: 32px;
-		padding-bottom: 32px;
 	}
 }
 
