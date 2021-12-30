@@ -50,16 +50,18 @@ app.post(
 		const result = await fetch("https://litterbox.catbox.moe/resources/internals/api.php", {
 			method: "POST",
 			body: formData,
-		}).then((r) => r.text());
+		})
+			.then((r) => r.text())
+			.catch((err) => {
+				console.error("Error uploading image!", err);
+				resp.status(500);
+				resp.send("Error");
+			});
 
 		if (result.startsWith("http")) {
 			console.log(`Uploaded image: ${result}`);
 			resp.status(200);
 			resp.send(result);
-		} else {
-			console.error("Error uploading image!");
-			resp.status(500);
-			resp.send("Error");
 		}
 	}
 );

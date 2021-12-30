@@ -1,0 +1,15 @@
+#github-link {
+	position: absolute;
+	display: block;
+	height: 38px;
+	width: 38px;
+
+	right: 6px;
+	bottom: 4px;
+}
+
+@media only screen and (max-width: 600px) {
+	#github-link {
+		position: static;
+	}
+}
