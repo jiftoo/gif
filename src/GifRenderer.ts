@@ -89,7 +89,7 @@ export async function renderImage(mainImage: string, captionImage: string): Prom
 async function renderGif(caption: HTMLImageElement, gif: HTMLImageElement, canvas: HTMLCanvasElement, newCaptionHeight: number, ctx: CanvasRenderingContext2D): Promise<Blob> {
 	const frames = await loadGifFrames(gif.src);
 
-	const gifBuilder = new GIF({workers: 4, quality: 10, width: canvas.width, height: canvas.height});
+	const gifBuilder = new GIF({workers: 2, quality: 10, width: canvas.width, height: canvas.height});
 
 	frames.forEach(([image, delay]) => {
 		ctx.drawImage(caption, 0, 0, canvas.width, Math.round(newCaptionHeight));

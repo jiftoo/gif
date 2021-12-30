@@ -15,6 +15,9 @@
 	src: url("../assets/SFMonoSemibold.otf");
 }
 
+
+/* TODO: cyrillic font-face */
+
 * {
 	font-family: "SFMono", "Courier New", monospace;
 	box-sizing: border-box;
