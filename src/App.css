@@ -23,6 +23,11 @@
 	color: rgba(255, 255, 255, 90%);
 }
 
+small {
+	display: inline-block;
+	margin-top: 8px;
+}
+
 #app {
 	height: 100vh;
 	overflow-y: scroll;

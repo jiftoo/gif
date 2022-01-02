@@ -185,6 +185,8 @@ function FrameEditor({image, imageLink, imageLinkState, onTextChange, resetImage
 									<a target="_blank" referrerPolicy="no-referrer" href={imageLink}>
 										{imageLink}
 									</a>
+									<br />
+									<small>(Deleted in 1 hour)</small>
 								</>
 							) : (
 								"Error while creating image"
