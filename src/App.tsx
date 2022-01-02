@@ -53,7 +53,6 @@ function FrameSelector({onImageSelected}: FrameSelectorProps) {
 				}
 				return null;
 			});
-			console.log(resp);
 			// Not sure if this even executes but who cares
 			if (resp === null) {
 				// empty
