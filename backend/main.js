@@ -21,7 +21,7 @@ async function readBodyAsBuffer(req) {
 
 app.use(
 	cors({
-		origin: ["https://jiftoo.dev", "http://localhost:3000"],
+		origin: ["https://www.jiftoo.dev", "https://jiftoo.dev", "http://localhost:3000"],
 	})
 );
 
