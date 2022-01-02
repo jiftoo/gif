@@ -1,8 +1,10 @@
 import html2canvas from "html2canvas";
 import {ChangeEvent, FormEventHandler, useState} from "react";
 import "./App.css";
+import Config from "./Config";
 import {GithubLink} from "./Footer";
 import {renderImage} from "./GifRenderer";
+import {StatusCodes} from "http-status-codes";
 
 function isValidHttpUrl(string: string) {
 	let url;
@@ -13,22 +15,6 @@ function isValidHttpUrl(string: string) {
 	}
 	return url.protocol === "http:" || url.protocol === "https:";
 }
-
-const getHeightAndWidthFromDataUrl = (dataURL: string | null) =>
-	new Promise<any>((resolve, reject) => {
-		if (!dataURL) {
-			reject("dataURL is null");
-			return;
-		}
-		const img = new Image();
-		img.onload = () => {
-			resolve({
-				height: img.height,
-				width: img.width,
-			});
-		};
-		img.src = dataURL;
-	});
 
 interface FrameSelectorProps {
 	onImageSelected: (url: string) => void;
@@ -56,9 +42,10 @@ function FrameSelector({onImageSelected}: FrameSelectorProps) {
 	const urlHandler = async (gifUrl: string) => {
 		let resultError = UrlErrorMessage.NONE;
 		if (isValidHttpUrl(gifUrl)) {
-			const resp = await fetch(gifUrl, {
+			const resp = await fetch(`${Config.CORS_PROXY_URL}?url=${gifUrl}`, {
 				method: "GET",
 			}).catch((err) => {
+				console.log(`${Config.CORS_PROXY_URL}?url=${gifUrl}`);
 				if (err.name === "AbortError") {
 					resultError = UrlErrorMessage.TIMEOUT;
 				} else {
@@ -66,12 +53,15 @@ function FrameSelector({onImageSelected}: FrameSelectorProps) {
 				}
 				return null;
 			});
+			console.log(resp);
 			// Not sure if this even executes but who cares
 			if (resp === null) {
 				// empty
-			} else if (resp.status === 403) {
+			} else if (resp.status === StatusCodes.FORBIDDEN) {
 				resultError = UrlErrorMessage.FORBIDDEN;
-			} else if (!resp.headers.get("Content-Type")?.startsWith("image/")) {
+			} else if (resp.status === StatusCodes.BAD_REQUEST) {
+				resultError = UrlErrorMessage.INVALID;
+			} else if (resp.status === StatusCodes.NOT_ACCEPTABLE || !resp.headers.get("Content-Type")?.startsWith("image")) {
 				resultError = UrlErrorMessage.NOT_AN_IMAGE;
 			} else {
 				const imageBlob = await resp.blob();
@@ -114,7 +104,7 @@ function FrameSelector({onImageSelected}: FrameSelectorProps) {
 						}
 					}}
 					id="gif-url"
-					placeholder="or paste the url"
+					placeholder="or paste the url (supports tenor)"
 					type="url"
 				/>
 				{urlErrorMessage !== UrlErrorMessage.NONE && <div id="url-error">{urlErrorMessage}</div>}
@@ -151,9 +141,9 @@ interface FrameEditorProps {
 }
 
 function FrameEditor({image, imageLink, imageLinkState, onTextChange, resetImage, saveImage}: FrameEditorProps) {
-	const [range, setRange] = useState(1);
-	const [min, max] = [0.25, 3].map((v) => v.toFixed(2));
+	const [min, max] = [Config.CAPTION_FONT_SIZE_MIN, Config.CAPTION_FONT_SIZE_MAX].map((v) => v.toFixed(2));
 	const mid = ((+min + +max) / 2).toFixed(2);
+	const [range, setRange] = useState<number>(parseFloat(mid));
 	return (
 		<div id="edit-area">
 			<div
@@ -172,7 +162,7 @@ function FrameEditor({image, imageLink, imageLinkState, onTextChange, resetImage
 			<img id="image" src={image} />
 			<div id="controls">
 				<div style={{textAlign: "center"}}>Font size multiplier</div>
-				<input type="range" min={min} max={max} step={0.01} value={range} onChange={(ev) => setRange(+ev.target.value)}></input>
+				<input type="range" min={min} max={max} step={0.01} value={range} onChange={(ev) => setRange(+ev.currentTarget.value)}></input>
 				<div id="range-labels">
 					<div>{min}</div>
 					<div>{mid}</div>
@@ -186,7 +176,7 @@ function FrameEditor({image, imageLink, imageLinkState, onTextChange, resetImage
 						Generate
 					</button>
 				</div>
-				{imageLinkState === ImageLinkState.PROCESSING && <div id="result-link">{"Creating image..."}</div>}
+				{imageLinkState === ImageLinkState.PROCESSING && <div id="result-link">{"Generating image..."}</div>}
 				{imageLinkState !== ImageLinkState.EMPTY && imageLinkState !== ImageLinkState.PROCESSING && (
 					<>
 						<div id="result-link">
@@ -220,8 +210,6 @@ function FrameEditor({image, imageLink, imageLinkState, onTextChange, resetImage
 
 function Frame() {
 	const [image, setImage] = useState<string | null>(null);
-	const [caption, setCaption] = useState("Caption");
-	const [aspectRatio, setAspectRatio] = useState("1");
 	const [imageLink, setImageLink] = useState<string | null>(null);
 	const [imageLinkState, setImageLinkState] = useState(ImageLinkState.EMPTY);
 
@@ -229,8 +217,7 @@ function Frame() {
 
 	const onTextChange = (ev: any) => {
 		const target = ev.target as HTMLDivElement;
-		console.log(ev.target.innerText);
-		setCaption(ev.target.innerText);
+		console.log(target.innerText);
 
 		const el = document.getElementById("image");
 		console.log(el!.clientWidth, el!.clientHeight);

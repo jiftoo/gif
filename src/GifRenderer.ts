@@ -5,6 +5,7 @@ import {GifReader} from "omggif";
 import GIF from "gif.js.optimized";
 // @ts-ignore
 import isMobileBrowser from "./detectmobilebrowser";
+import Config from "./Config";
 
 export async function loadGifFrames(gifUrl: string): Promise<[HTMLCanvasElement, number][]> {
 	const response = await fetch(gifUrl);
@@ -75,7 +76,7 @@ export async function renderImage(mainImage: string, captionImage: string): Prom
 		blob = await renderStaticImage(caption, gif, canvas, newCaptionHeight, ctx);
 	}
 
-	const response = await fetch("https://jiftoo.dev/gif/backend", {
+	const response = await fetch(Config.LITTERBOX_API_URL, {
 		method: "POST",
 		mode: "cors",
 		body: blob,
@@ -91,7 +92,7 @@ export async function renderImage(mainImage: string, captionImage: string): Prom
 async function renderGif(caption: HTMLImageElement, gif: HTMLImageElement, canvas: HTMLCanvasElement, newCaptionHeight: number, ctx: CanvasRenderingContext2D): Promise<Blob> {
 	const frames = await loadGifFrames(gif.src);
 
-	let workers = 2;
+	let workers = Config.DEFAULT_WORKERS;
 	const isMoblie = isMobileBrowser();
 	if (!isMoblie) {
 		workers = Math.max(window.navigator.hardwareConcurrency - 1, workers);
@@ -99,9 +100,10 @@ async function renderGif(caption: HTMLImageElement, gif: HTMLImageElement, canva
 
 	console.log("Using", workers, "workers");
 
-	const gifBuilder = new GIF({workers: workers, quality: 10, width: canvas.width, height: canvas.height});
+	const gifBuilder = new GIF({workers: workers, quality: Config.GIF_QUALITY, width: canvas.width, height: canvas.height});
 
-	frames.forEach(([image, delay]) => {
+	frames.forEach(([image, delay], i) => {
+		console.log("Painting gif frames:", i, "/", frames.length);
 		ctx.drawImage(caption, 0, 0, canvas.width, Math.round(newCaptionHeight));
 		// ctx.putImageData(image, 0, newCaptionHeight - 1); // grey line hack
 		ctx.drawImage(image, 0, newCaptionHeight - 1); // grey line hack
@@ -109,6 +111,7 @@ async function renderGif(caption: HTMLImageElement, gif: HTMLImageElement, canva
 	});
 
 	return new Promise<Blob>((f) => {
+		gifBuilder.on("progress", (p: number) => console.log("Building gif:", (p * 100).toFixed(1)));
 		gifBuilder.on("finished", (blob: any) => {
 			f(blob);
 		});

@@ -1,13 +1,11 @@
 const express = require("express");
 const app = express();
-const {Blob} = require("buffer");
 const FormData = require("form-data");
-const {createReadStream} = require("fs");
-const http = require("http");
 const cors = require("cors");
-const {Readable} = require("stream");
+const {StatusCodes} = require("http-status-codes");
 const multer = require("multer");
-const fetch = (...args) => import("node-fetch").then(({default: fetch}) => fetch(...args));
+const fetch = require("node-fetch");
+const chalk = require("chalk");
 
 let upload = multer();
 
@@ -21,20 +19,71 @@ async function readBodyAsBuffer(req) {
 	});
 }
 
-async function streamToString(stream) {
-	// lets have a ReadableStream as a stream variable
-	const chunks = [];
+app.use(
+	cors({
+		origin: ["https://jiftoo.dev", "http://localhost:3000"],
+	})
+);
 
-	for await (const chunk of stream) {
-		chunks.push(Buffer.from(chunk));
+app.get("/gif/cors", async (req, resp) => {
+	//#region URL creation and validation
+	const urlstring = req.query.url;
+	if (!urlstring) {
+		resp.status(StatusCodes.BAD_REQUEST).send("'url' parameter missing");
+		console.log("bad request", "parameter missing", chalk.cyanBright(url.toString()));
+		return;
 	}
+	let url;
+	try {
+		url = new URL(urlstring);
+	} catch (err) {
+		resp.status(StatusCodes.BAD_REQUEST).send("malformed url");
+		console.log("bad request", "malformed url", chalk.cyanBright(url.toString()));
+		return;
+	}
+	//#endregion
 
-	return Buffer.concat(chunks).toString("utf-8");
-}
+	//#region tenor fetch
+	if (url.hostname === "tenor.com") {
+		const id = url.pathname.split("-").pop();
+		const response = await fetch(`https://g.tenor.com/v1/gifs?ids=${id}&key=PC8YFJOK96O7&media_filter=gif&limit=1`);
+		if (response.ok) {
+			const json = await response.json();
+			// changing url
+			url = new URL(json.results[0].media[0].gif.url);
+		} else {
+			resp.status(StatusCodes.NOT_ACCEPTABLE).send("tenor.com error");
+			console.error("not acceptable", "tenor.com error", chalk.cyanBright(url.toString()));
+			return;
+		}
+	}
+	//#endregion
 
-app.use(cors());
+	try {
+		const result = await fetch(url, {
+			timeout: 4000,
+			method: "GET",
+		});
+		if (!result.headers.get("Content-Type").startsWith("image")) {
+			resp.status(StatusCodes.NOT_ACCEPTABLE).send("url does not resolve to an image");
+			console.error("not acceptable", "no image", chalk.cyanBright(url.toString()), chalk.bgRed(result.headers.get("Content-Type")));
+			return;
+		}
+		result.headers.forEach((v, k) => resp.setHeader(k, v));
+		result.body.pipe(resp);
+		console.log("proxied", url.toString());
+	} catch (error) {
+		if (error.type === "request-timeout") {
+			resp.sendStatus(StatusCodes.REQUEST_TIMEOUT);
+			console.error("timeout", "tenor.com error");
+		} else {
+			resp.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+		}
+	}
+});
+
 app.post(
-	"/gif/backend",
+	"/gif/litterbox",
 	express.raw({
 		limit: "54mb",
 		type: "image/*",
@@ -66,5 +115,7 @@ app.post(
 	}
 );
 
-app.listen(8002);
-console.log("Listening");
+const port = 8002;
+
+app.listen(port);
+console.log("Listening on", port);
