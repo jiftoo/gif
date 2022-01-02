@@ -3,6 +3,8 @@
 import {GifReader} from "omggif";
 // @ts-ignore
 import GIF from "gif.js.optimized";
+// @ts-ignore
+import isMobileBrowser from "./detectmobilebrowser";
 
 export async function loadGifFrames(gifUrl: string): Promise<[HTMLCanvasElement, number][]> {
 	const response = await fetch(gifUrl);
@@ -89,7 +91,15 @@ export async function renderImage(mainImage: string, captionImage: string): Prom
 async function renderGif(caption: HTMLImageElement, gif: HTMLImageElement, canvas: HTMLCanvasElement, newCaptionHeight: number, ctx: CanvasRenderingContext2D): Promise<Blob> {
 	const frames = await loadGifFrames(gif.src);
 
-	const gifBuilder = new GIF({workers: 2, quality: 10, width: canvas.width, height: canvas.height});
+	let workers = 2;
+	const isMoblie = isMobileBrowser();
+	if (!isMoblie) {
+		workers = Math.max(window.navigator.hardwareConcurrency - 1, workers);
+	}
+
+	console.log("Using", workers, "workers");
+
+	const gifBuilder = new GIF({workers: workers, quality: 10, width: canvas.width, height: canvas.height});
 
 	frames.forEach(([image, delay]) => {
 		ctx.drawImage(caption, 0, 0, canvas.width, Math.round(newCaptionHeight));
