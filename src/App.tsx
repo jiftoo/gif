@@ -3,7 +3,7 @@ import {ChangeEvent, FormEventHandler, useState} from "react";
 import "./App.css";
 import Config from "./Config";
 import {GithubLink} from "./Footer";
-import {renderImage} from "./GifRenderer";
+import {renderImage, uploadToLitterbox} from "./GifRenderer";
 import {StatusCodes} from "http-status-codes";
 
 function isValidHttpUrl(string: string) {
@@ -128,6 +128,7 @@ enum ImageLinkState {
 	PROCESSING,
 	OK,
 	ERR,
+	BACKEND_ERROR,
 }
 
 interface FrameEditorProps {
@@ -176,7 +177,19 @@ function FrameEditor({image, imageLink, imageLinkState, onTextChange, resetImage
 					</button>
 				</div>
 				{imageLinkState === ImageLinkState.PROCESSING && <div id="result-link">{"Generating image..."}</div>}
-				{imageLinkState !== ImageLinkState.EMPTY && imageLinkState !== ImageLinkState.PROCESSING && (
+				{imageLinkState === ImageLinkState.BACKEND_ERROR && (
+					<div id="result-link">
+						<span>Could not upload to litterbox</span>
+						<br />
+						<br />
+						{"Link to result: "}
+						<a target="_blank" referrerPolicy="no-referrer" href={imageLink}>
+							{imageLink}
+						</a>
+						<br />
+					</div>
+				)}
+				{imageLinkState !== ImageLinkState.EMPTY && imageLinkState !== ImageLinkState.PROCESSING && imageLinkState !== ImageLinkState.BACKEND_ERROR && (
 					<>
 						<div id="result-link">
 							{imageLink ? (
@@ -232,9 +245,15 @@ function Frame() {
 			windowWidth: 1000,
 			windowHeight: 565,
 		}).then(async (captionImage) => {
-			const result = await renderImage(image!, captionImage.toDataURL());
-			setImageLinkState(result ? ImageLinkState.OK : ImageLinkState.ERR);
-			setImageLink(result);
+			const blob = await renderImage(image!, captionImage.toDataURL());
+			const litterboxLink = await uploadToLitterbox(blob);
+			if (litterboxLink) {
+				setImageLinkState(ImageLinkState.OK);
+				setImageLink(litterboxLink);
+			} else {
+				setImageLinkState(ImageLinkState.BACKEND_ERROR);
+				setImageLink(URL.createObjectURL(blob));
+			}
 		});
 	};
 

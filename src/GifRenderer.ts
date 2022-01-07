@@ -43,7 +43,21 @@ export async function loadGifFrames(gifUrl: string): Promise<[HTMLCanvasElement,
 	});
 }
 
-export async function renderImage(mainImage: string, captionImage: string): Promise<string | null> {
+export async function uploadToLitterbox(blob: Blob) {
+	const response = await fetch(Config.LITTERBOX_API_URL, {
+		method: "POST",
+		mode: "cors",
+		body: blob,
+	}).catch((err) => console.error("litterbox failure:", err));
+
+	if (response?.ok) {
+		return await response.text();
+	} else {
+		return null;
+	}
+}
+
+export async function renderImage(mainImage: string, captionImage: string): Promise<Blob> {
 	const gif = new Image();
 	const caption = new Image();
 	const promise = Promise.all([
@@ -59,7 +73,7 @@ export async function renderImage(mainImage: string, captionImage: string): Prom
 	await promise;
 
 	const captionAr = caption.width / caption.height;
-	const newCaptionHeight = gif.width * (1 / captionAr) + 1; // grey line hack
+	const newCaptionHeight = gif.width * (1 / captionAr); // grey line hack
 
 	const canvas = document.createElement("canvas");
 	canvas.width = gif.width;
@@ -69,24 +83,14 @@ export async function renderImage(mainImage: string, captionImage: string): Prom
 		throw Error("No 2d context");
 	}
 
-	let blob = null;
+	let blob: Blob | null = null;
 	if (mainImage.startsWith("data:image/gif")) {
 		blob = await renderGif(caption, gif, canvas, newCaptionHeight, ctx);
 	} else {
 		blob = await renderStaticImage(caption, gif, canvas, newCaptionHeight, ctx);
 	}
 
-	const response = await fetch(Config.LITTERBOX_API_URL, {
-		method: "POST",
-		mode: "cors",
-		body: blob,
-	});
-
-	if (response.ok) {
-		return await response.text();
-	} else {
-		return null;
-	}
+	return blob;
 }
 
 async function renderGif(caption: HTMLImageElement, gif: HTMLImageElement, canvas: HTMLCanvasElement, newCaptionHeight: number, ctx: CanvasRenderingContext2D): Promise<Blob> {
@@ -105,8 +109,7 @@ async function renderGif(caption: HTMLImageElement, gif: HTMLImageElement, canva
 	frames.forEach(([image, delay], i) => {
 		console.log("Painting gif frames:", i, "/", frames.length);
 		ctx.drawImage(caption, 0, 0, canvas.width, Math.round(newCaptionHeight));
-		// ctx.putImageData(image, 0, newCaptionHeight - 1); // grey line hack
-		ctx.drawImage(image, 0, newCaptionHeight - 1); // grey line hack
+		ctx.drawImage(image, 0, newCaptionHeight);
 		gifBuilder.addFrame(ctx, {copy: true, delay: delay * 10});
 	});
 
@@ -127,7 +130,7 @@ async function renderStaticImage(
 	ctx: CanvasRenderingContext2D
 ): Promise<Blob> {
 	ctx.drawImage(caption, 0, 0, canvas.width, newCaptionHeight);
-	ctx.drawImage(gif, 0, newCaptionHeight - 1); // grey line hack
+	ctx.drawImage(gif, 0, newCaptionHeight);
 
 	const result: Blob = await new Promise((a) => canvas.toBlob((blob) => a(blob!)));
 	return result;
