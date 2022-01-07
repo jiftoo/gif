@@ -5,9 +5,9 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
 	plugins: [react()],
 	base: "/gif/",
-    build: {
-        outDir: "dist/gif"
-    },
+	build: {
+		outDir: "dist/gif",
+	},
 	server: {
 		open: true,
 	},
