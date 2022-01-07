@@ -179,14 +179,20 @@ function FrameEditor({image, imageLink, imageLinkState, onTextChange, resetImage
 				{imageLinkState === ImageLinkState.PROCESSING && <div id="result-link">{"Generating image..."}</div>}
 				{imageLinkState === ImageLinkState.BACKEND_ERROR && (
 					<div id="result-link">
-						<span>Could not upload to litterbox</span>
-						<br />
-						<br />
-						{"Link to result: "}
-						<a target="_blank" referrerPolicy="no-referrer" href={imageLink}>
-							{imageLink}
-						</a>
-						<br />
+						{imageLink ? (
+							<>
+								<span>Could not upload to litterbox</span>
+								<br />
+								<br />
+								{"Link to result: "}
+								<a target="_blank" referrerPolicy="no-referrer" href={imageLink}>
+									{imageLink}
+								</a>
+								<br />
+							</>
+						) : (
+							"Error creating image"
+						)}
 					</div>
 				)}
 				{imageLinkState !== ImageLinkState.EMPTY && imageLinkState !== ImageLinkState.PROCESSING && imageLinkState !== ImageLinkState.BACKEND_ERROR && (
