@@ -1,10 +1,14 @@
 import html2canvas from "html2canvas";
+import {StatusCodes} from "http-status-codes";
 import {ChangeEvent, FormEventHandler, useState} from "react";
 import "./App.css";
 import Config from "./Config";
+// @ts-ignore
+import isMobileBrowser from "./detectmobilebrowser";
 import {GithubLink} from "./Footer";
 import {renderImage, uploadToLitterbox} from "./GifRenderer";
-import {StatusCodes} from "http-status-codes";
+
+export const IS_MOBILE = isMobileBrowser();
 
 function isValidHttpUrl(string: string) {
 	let url;
@@ -264,44 +268,51 @@ function Frame() {
 	};
 
 	return (
-		<div
-			id="frame"
-			className={imageSelected ? "editor" : "selector"}
-			onDragOver={(ev) => {
-				ev.preventDefault();
-				if (ev.dataTransfer.types.includes("Files")) {
-					ev.currentTarget.classList.add("drag");
-				}
-			}}
-			onDragLeave={(ev) => {
-				ev.currentTarget.classList.remove("drag");
-			}}
-			onDrop={(ev) => {
-				ev.currentTarget.classList.remove("drag");
-			}}
-		>
-			{imageSelected ? (
-				<FrameEditor
-					imageLinkState={imageLinkState}
-					imageLink={imageLink}
-					image={image}
-					onTextChange={onTextChange}
-					resetImage={() => (setImage(null), setImageLinkState(ImageLinkState.EMPTY))}
-					saveImage={saveImage}
-				/>
-			) : (
-				<FrameSelector onImageSelected={setImage} />
+		<>
+			{!imageSelected && !IS_MOBILE && (
+				<div id="header-container">
+					<h1 id="header">Add text to animated GIF</h1>
+				</div>
 			)}
-			<GithubLink />
-		</div>
+			<div
+				id="frame"
+				className={imageSelected ? "editor" : "selector"}
+				onDragOver={(ev) => {
+					ev.preventDefault();
+					if (ev.dataTransfer.types.includes("Files")) {
+						ev.currentTarget.classList.add("drag");
+					}
+				}}
+				onDragLeave={(ev) => {
+					ev.currentTarget.classList.remove("drag");
+				}}
+				onDrop={(ev) => {
+					ev.currentTarget.classList.remove("drag");
+				}}
+			>
+				{imageSelected ? (
+					<FrameEditor
+						imageLinkState={imageLinkState}
+						imageLink={imageLink}
+						image={image}
+						onTextChange={onTextChange}
+						resetImage={() => (setImage(null), setImageLinkState(ImageLinkState.EMPTY))}
+						saveImage={saveImage}
+					/>
+				) : (
+					<FrameSelector onImageSelected={setImage} />
+				)}
+				<GithubLink />
+			</div>
+		</>
 	);
 }
 
 function App() {
 	return (
-		<div id="app">
+		<>
 			<Frame />
-		</div>
+		</>
 	);
 }
 

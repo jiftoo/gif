@@ -1,10 +1,9 @@
 // TODO: uninstall gif libraries
 
-import {GifReader} from "omggif";
 // @ts-ignore
 import GIF from "gif.js.optimized";
-// @ts-ignore
-import isMobileBrowser from "./detectmobilebrowser";
+import {GifReader} from "omggif";
+import {IS_MOBILE} from "./App";
 import Config from "./Config";
 
 export async function loadGifFrames(gifUrl: string): Promise<[HTMLCanvasElement, number][]> {
@@ -97,8 +96,7 @@ async function renderGif(caption: HTMLImageElement, gif: HTMLImageElement, canva
 	const frames = await loadGifFrames(gif.src);
 
 	let workers = Config.DEFAULT_WORKERS;
-	const isMoblie = isMobileBrowser();
-	if (!isMoblie) {
+	if (!IS_MOBILE) {
 		workers = Math.max(window.navigator.hardwareConcurrency - 1, workers);
 	}
 
