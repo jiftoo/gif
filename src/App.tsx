@@ -185,7 +185,7 @@ function FrameEditor({image, imageLink, imageLinkState, onTextChange, resetImage
 								<br />
 								<br />
 								{"Link to result: "}
-								<a target="_blank" referrerPolicy="no-referrer" href={imageLink}>
+								<a target="_blank" rel="noreferrer" href={imageLink}>
 									{imageLink}
 								</a>
 								<br />
@@ -201,7 +201,7 @@ function FrameEditor({image, imageLink, imageLinkState, onTextChange, resetImage
 							{imageLink ? (
 								<>
 									{"Link to result: "}
-									<a target="_blank" referrerPolicy="no-referrer" href={imageLink}>
+									<a target="_blank" rel="noreferrer" href={imageLink}>
 										{imageLink}
 									</a>
 									<br />
