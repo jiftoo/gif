@@ -42,10 +42,13 @@ export async function loadGifFrames(gifUrl: string): Promise<[HTMLCanvasElement,
 	});
 }
 
-export async function uploadToLitterbox(blob: Blob) {
+export async function uploadToLitterbox(blob: Blob, caption: string) {
 	const response = await fetch(Config.LITTERBOX_API_URL, {
 		method: "POST",
 		mode: "cors",
+		headers: {
+			"image-caption": caption.trim(),
+		},
 		body: blob,
 	}).catch((err) => console.error("litterbox failure:", err));
 

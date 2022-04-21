@@ -3,19 +3,24 @@ const app = express();
 const FormData = require("form-data");
 const cors = require("cors");
 const {StatusCodes} = require("http-status-codes");
-const multer = require("multer");
 const fetch = require("node-fetch");
 const chalk = require("chalk");
+const fs = require("fs");
+const path = require("path");
 
-let upload = multer();
+async function saveImage(caption, body, litterboxLink) {
+	const savePath = "./gifs";
+	const invalidChRegex = /([^a-z0-9 ]+)/gi;
+	const formattedName = caption.replaceAll(invalidChRegex, "-").substring(0, 50);
+	const formattedTimestamp = new Date().toISOString().replaceAll(":", ".");
 
-async function readBodyAsBuffer(req) {
-	return new Promise((resolve, reject) => {
-		let buffer = Buffer.alloc(0);
-		req.setEncoding(null);
-		req.on("data", (chunk) => (buffer = Buffer.concat([buffer, Buffer.from(chunk)])));
-		req.on("end", () => resolve(buffer));
-		req.on("error", reject);
+	fs.writeFile(path.join(savePath, `${formattedName}-${formattedTimestamp}.png`), Buffer.from(body, "binary"), {flag: "w"}, (err) => {
+		const litterboxLogMessage = !!litterboxLink ? "and uploaded" : "and not uploaded";
+		if (err) {
+			console.log("Not saved", litterboxLogMessage, chalk.yellowBright(formattedName), litterboxLink ? `to ${litterboxLink} at` : "at", chalk.red(formattedTimestamp));
+		} else {
+			console.log("Saved", litterboxLogMessage, chalk.yellowBright(formattedName), litterboxLink ? `to ${litterboxLink} at` : "at", chalk.red(formattedTimestamp));
+		}
 	});
 }
 
@@ -96,22 +101,26 @@ app.post(
 		formData.append("time", "1h");
 		formData.append("reqtype", "fileupload");
 
+		let litterboxLink = null;
+
 		const result = await fetch("https://litterbox.catbox.moe/resources/internals/api.php", {
 			method: "POST",
 			body: formData,
 		})
 			.then((r) => r.text())
 			.catch((err) => {
-				console.error("Error uploading image!", err);
+				console.error(err);
 				resp.status(500);
 				resp.send("Error");
 			});
 
-		if (result.startsWith("http")) {
-			console.log(`Uploaded image: ${result}`);
+		if (result?.startsWith("http")) {
 			resp.status(200);
 			resp.send(result);
+			litterboxLink = result;
 		}
+
+		saveImage(req.headers["image-caption"], data, litterboxLink);
 	}
 );
 
