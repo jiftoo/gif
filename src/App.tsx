@@ -243,8 +243,8 @@ function Frame() {
 		// unused
 	};
 
-	const captionElement = document.getElementById("caption")!;
 	const saveImage = () => {
+		const captionElement = document.getElementById("caption")!;
 		setImageLinkState(ImageLinkState.PROCESSING);
 		html2canvas(captionElement, {
 			logging: false,

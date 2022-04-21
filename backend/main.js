@@ -17,7 +17,14 @@ async function saveImage(caption, body, litterboxLink) {
 	fs.writeFile(path.join(savePath, `${formattedName}-${formattedTimestamp}.png`), Buffer.from(body, "binary"), {flag: "w"}, (err) => {
 		const litterboxLogMessage = !!litterboxLink ? "and uploaded" : "and not uploaded";
 		if (err) {
-			console.log("Not saved", litterboxLogMessage, chalk.yellowBright(formattedName), litterboxLink ? `to ${litterboxLink} at` : "at", chalk.red(formattedTimestamp));
+			console.log(
+				"Not saved",
+				litterboxLogMessage,
+				chalk.yellowBright(formattedName),
+				litterboxLink ? `to ${litterboxLink} at` : "at",
+				chalk.red(formattedTimestamp) + ":",
+				err.message
+			);
 		} else {
 			console.log("Saved", litterboxLogMessage, chalk.yellowBright(formattedName), litterboxLink ? `to ${litterboxLink} at` : "at", chalk.red(formattedTimestamp));
 		}
