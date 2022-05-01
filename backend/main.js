@@ -14,7 +14,8 @@ async function saveImage(caption, body, litterboxLink) {
 	const formattedName = caption.replaceAll(invalidChRegex, "-").substring(0, 50);
 	const formattedTimestamp = new Date().toISOString().replaceAll(":", ".");
 
-	fs.writeFile(path.join(savePath, `${formattedName}-${formattedTimestamp}.png`), Buffer.from(body, "binary"), {flag: "w"}, (err) => {
+    // formattedTimestamp goes first to be able to sort by date.
+	fs.writeFile(path.join(savePath, `${formattedTimestamp}-${formattedName}.png`), Buffer.from(body, "binary"), {flag: "w"}, (err) => {
 		const litterboxLogMessage = !!litterboxLink ? "and uploaded" : "and not uploaded";
 		if (err) {
 			console.log(
