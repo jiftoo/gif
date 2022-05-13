@@ -78,7 +78,7 @@ small {
 
 @media only screen and (max-height: 2000px) {
 	#frame.editor {
-		margin-top: auto;
+		margin-top: 10px;
 	}
 }
 
