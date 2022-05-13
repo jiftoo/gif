@@ -240,23 +240,20 @@ function Frame() {
 	const imageSelected = image !== null;
 
 	const onTextChange = (ev: any) => {
-		const target = ev.target as HTMLDivElement;
-		console.log(target.innerText);
-
-		const el = document.getElementById("image");
-		console.log(el!.clientWidth, el!.clientHeight);
+		// unused
 	};
 
 	const saveImage = () => {
+		const captionElement = document.getElementById("caption")!;
 		setImageLinkState(ImageLinkState.PROCESSING);
-		html2canvas(document.getElementById("caption")!, {
+		html2canvas(captionElement, {
 			logging: false,
 			scale: 3,
 			windowWidth: 1000,
 			windowHeight: 565,
 		}).then(async (captionImage) => {
 			const blob = await renderImage(image!, captionImage.toDataURL());
-			const litterboxLink = await uploadToLitterbox(blob);
+			const litterboxLink = await uploadToLitterbox(blob, captionElement.innerText);
 			if (litterboxLink) {
 				setImageLinkState(ImageLinkState.OK);
 				setImageLink(litterboxLink);

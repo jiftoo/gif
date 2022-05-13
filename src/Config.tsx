@@ -4,7 +4,7 @@ export default {
 	CORS_PROXY_URL: "https://jiftoo.dev/gif/cors",
 	// CORS_PROXY_URL: "http://localhost:8002/gif/cors",
 	DEFAULT_WORKERS: 2,
-	GIF_QUALITY: 14, // 1 - 30? (lower is better)
+	GIF_QUALITY: 13, // 1 - 30? (lower is better)
 	CAPTION_FONT_SIZE_MIN: 0.25,
 	CAPTION_FONT_SIZE_MAX: 3,
 };
