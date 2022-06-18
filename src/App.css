@@ -180,7 +180,6 @@ small {
 	font-family: "Futura Extra Black";
 	font-size: var(--caption-font-size);
 
-	word-break: break-all;
 	text-align: center;
 }
 
