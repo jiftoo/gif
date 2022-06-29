@@ -15,6 +15,7 @@ specifiers:
   react: ^17.0.2
   react-dom: ^17.0.2
   react-icons: ^4.3.1
+  react-spinners: ^0.13.2
   typescript: ^4.4.4
   vite: ^2.7.2
 
@@ -26,6 +27,7 @@ dependencies:
   react: 17.0.2
   react-dom: 17.0.2_react@17.0.2
   react-icons: 4.4.0_react@17.0.2
+  react-spinners: 0.13.2_sfoxds7t5ydpegc3knd667wn6m
 
 devDependencies:
   '@types/file-saver': 2.0.5
@@ -850,6 +852,16 @@ packages:
     resolution: {integrity: sha512-XP8A9BT0CpRBD+NYLLeIhld/RqG9+gktUjW1FkE+Vm7OCinbG1SshcK5tb9ls4kzvjZr9mOQc7HYgBngEyPAXg==}
     engines: {node: '>=0.10.0'}
     dev: true
+
+  /react-spinners/0.13.2_sfoxds7t5ydpegc3knd667wn6m:
+    resolution: {integrity: sha512-GrtgDlHHMl9DbPgO9NByRyMDCHbrUoW37xwo+bdac9lPFnwlp7DW5uTykSayf/j47YiBAvrQybS9AuM9T+WLeA==}
+    peerDependencies:
+      react: ^16.0.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 17.0.2
+      react-dom: 17.0.2_react@17.0.2
+    dev: false
 
   /react/17.0.2:
     resolution: {integrity: sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA==}

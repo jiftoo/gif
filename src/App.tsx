@@ -1,6 +1,7 @@
 import html2canvas from "html2canvas";
 import {StatusCodes} from "http-status-codes";
 import {ChangeEvent, FormEventHandler, useState} from "react";
+import {ClipLoader, PacmanLoader, PropagateLoader} from "react-spinners";
 import "./App.css";
 import Config from "./Config";
 // @ts-ignore
@@ -31,10 +32,12 @@ enum UrlErrorMessage {
 	FORBIDDEN = "Forbidden (403)",
 	TIMEOUT = "Request timeout",
 	ERROR = "Unknown error while fetching url",
+	NOHOST = "Backend is unreachable. Uploading files still works.",
 }
 
 function FrameSelector({onImageSelected}: FrameSelectorProps) {
 	const [urlErrorMessage, setUrlErrorMessage] = useState<UrlErrorMessage>(UrlErrorMessage.NONE);
+	const [isLoadingUrl, setIsLoadingUrl] = useState(false);
 
 	const fileInputHandler = ({target}: ChangeEvent<HTMLInputElement>) => {
 		if (!target.files) return;
@@ -45,18 +48,26 @@ function FrameSelector({onImageSelected}: FrameSelectorProps) {
 	};
 	const urlHandler = async (gifUrl: string) => {
 		let resultError = UrlErrorMessage.NONE;
+		setUrlErrorMessage(resultError); // clear previous error
 		if (isValidHttpUrl(gifUrl)) {
+			setIsLoadingUrl(true);
 			const resp = await fetch(`${Config.CORS_PROXY_URL}?url=${gifUrl}`, {
 				method: "GET",
-			}).catch((err) => {
-				console.log(`${Config.CORS_PROXY_URL}?url=${gifUrl}`);
-				if (err.name === "AbortError") {
-					resultError = UrlErrorMessage.TIMEOUT;
-				} else {
-					resultError = UrlErrorMessage.ERROR;
-				}
-				return null;
-			});
+			})
+				.catch((err) => {
+					console.log(`${Config.CORS_PROXY_URL}?url=${gifUrl}`);
+					if (err.name === "AbortError") {
+						resultError = UrlErrorMessage.TIMEOUT;
+					} else if (err.toString().includes("NetworkError")) {
+						resultError = UrlErrorMessage.NOHOST;
+					} else {
+						resultError = UrlErrorMessage.ERROR;
+					}
+					return null;
+				})
+				.finally(() => {
+					setIsLoadingUrl(false);
+				});
 			// Not sure if this even executes but who cares
 			if (resp === null) {
 				// empty
@@ -110,7 +121,16 @@ function FrameSelector({onImageSelected}: FrameSelectorProps) {
 					placeholder="or paste the url (supports tenor)"
 					type="url"
 				/>
-				{urlErrorMessage !== UrlErrorMessage.NONE && <div id="url-error">{urlErrorMessage}</div>}
+				<div id="gif-url-spinner">{isLoadingUrl && <PropagateLoader id="loader" color="var(--loader-color)"></PropagateLoader>}</div>
+				<div id="url-error">
+					{urlErrorMessage !== UrlErrorMessage.NONE ? (
+						urlErrorMessage
+					) : (
+						<>
+							&nbsp;
+						</>
+					)}
+				</div>
 			</div>
 			<input
 				id="file-select-onclick"

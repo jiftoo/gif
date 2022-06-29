@@ -21,6 +21,7 @@
 	font-family: "SFMono", "Courier New", monospace;
 	box-sizing: border-box;
 	color: rgba(255, 255, 255, 90%);
+	--loader-color: rgba(255, 255, 255, 90%);
 }
 
 small {
@@ -47,7 +48,7 @@ small {
 }
 #header {
 	margin-top: 0;
-    margin-bottom: 1em;
+	margin-bottom: 1em;
 	font-weight: normal !important;
 	font-family: "SFMono";
 }
@@ -152,6 +153,10 @@ small {
 }
 #gif-url::placeholder {
 	text-align: center;
+}
+
+#gif-url-spinner {
+	margin-top: 8px;
 }
 
 #url-error {
