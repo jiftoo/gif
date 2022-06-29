@@ -34,7 +34,7 @@ async function saveImage(caption, body, litterboxLink) {
 
 app.use(
 	cors({
-		origin: ["https://api.jiftoo.dev", "https://jiftoo.dev"],
+		origin: ["https://jiftoo.dev/gif"],
 	})
 );
 

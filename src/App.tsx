@@ -1,7 +1,7 @@
 import html2canvas from "html2canvas";
 import {StatusCodes} from "http-status-codes";
 import {ChangeEvent, FormEventHandler, useState} from "react";
-import {ClipLoader, PacmanLoader, PropagateLoader} from "react-spinners";
+import {PropagateLoader} from "react-spinners";
 import "./App.css";
 import Config from "./Config";
 // @ts-ignore
