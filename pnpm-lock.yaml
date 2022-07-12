@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@types/file-saver': ^2.0.4
   '@types/gif.js': ^0.2.2
+  '@types/node': ^18.0.3
   '@types/omggif': ^1.0.2
   '@types/react': ^17.0.33
   '@types/react-dom': ^17.0.10
@@ -32,6 +33,7 @@ dependencies:
 devDependencies:
   '@types/file-saver': 2.0.5
   '@types/gif.js': 0.2.2
+  '@types/node': 18.0.3
   '@types/omggif': 1.0.3
   '@types/react': 17.0.47
   '@types/react-dom': 17.0.17
@@ -355,6 +357,10 @@ packages:
 
   /@types/gif.js/0.2.2:
     resolution: {integrity: sha512-/FVEOmcoK/mdNVIW87k8A0vBC5MxBCb1Tgw57FfPBzPS12JW8jrI8qwX9pT3e1iawtIurQm34x6jY1N2awM7hQ==}
+    dev: true
+
+  /@types/node/18.0.3:
+    resolution: {integrity: sha512-HzNRZtp4eepNitP+BD6k2L6DROIDG4Q0fm4x+dwfsr6LGmROENnok75VGw40628xf+iR24WeMFcHuuBDUAzzsQ==}
     dev: true
 
   /@types/omggif/1.0.3:
