@@ -70,8 +70,11 @@ export async function renderImage(mainImage: string, captionImage: string): Prom
 			caption.onload = a;
 		}),
 	]);
+	gif.width = Math.max(Config.MIN_WIDTH, gif.width);
+	gif.height = Math.max(Config.MIN_HEIGHT, gif.height);
 	gif.src = mainImage;
 	caption.src = captionImage;
+	console.log(gif);
 	await promise;
 
 	const captionAr = caption.width / caption.height;
@@ -108,9 +111,10 @@ async function renderGif(caption: HTMLImageElement, gif: HTMLImageElement, canva
 	const gifBuilder = new GIF({workers: workers, quality: Config.GIF_QUALITY, width: canvas.width, height: canvas.height});
 
 	frames.forEach(([image, delay], i) => {
+		console.log("width", canvas.width);
 		console.log("Painting gif frames:", i, "/", frames.length);
 		ctx.drawImage(caption, 0, 0, canvas.width, Math.round(newCaptionHeight));
-		ctx.drawImage(image, 0, newCaptionHeight);
+		ctx.drawImage(image, 0, newCaptionHeight, Math.max(Config.MIN_WIDTH, image.width), Math.max(Config.MIN_HEIGHT, image.height));
 		gifBuilder.addFrame(ctx, {copy: true, delay: delay * 10});
 	});
 
