@@ -8,5 +8,4 @@ export default {
 	CAPTION_FONT_SIZE_MIN: 0.25,
 	CAPTION_FONT_SIZE_MAX: 3,
     MIN_WIDTH: 450,
-    MIN_HEIGHT: 450,
 };

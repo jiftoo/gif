@@ -71,7 +71,6 @@ export async function renderImage(mainImage: string, captionImage: string): Prom
 		}),
 	]);
 	gif.width = Math.max(Config.MIN_WIDTH, gif.width);
-	gif.height = Math.max(Config.MIN_HEIGHT, gif.height);
 	gif.src = mainImage;
 	caption.src = captionImage;
 	console.log(gif);
@@ -114,7 +113,7 @@ async function renderGif(caption: HTMLImageElement, gif: HTMLImageElement, canva
 		console.log("width", canvas.width);
 		console.log("Painting gif frames:", i, "/", frames.length);
 		ctx.drawImage(caption, 0, 0, canvas.width, Math.round(newCaptionHeight));
-		ctx.drawImage(image, 0, newCaptionHeight, Math.max(Config.MIN_WIDTH, image.width), Math.max(Config.MIN_HEIGHT, image.height));
+		ctx.drawImage(image, 0, newCaptionHeight, Math.max(Config.MIN_WIDTH, image.width), image.height);
 		gifBuilder.addFrame(ctx, {copy: true, delay: delay * 10});
 	});
 
