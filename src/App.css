@@ -91,7 +91,7 @@ small {
 	transform: scale(101%);
 }
 
-#frame.drag {
+#frame.drag:not(.editor) {
 	animation: frame-wiggle;
 	animation-iteration-count: infinite;
 	animation-direction: alternate-reverse;
@@ -252,9 +252,13 @@ small {
 	color: black;
 }
 #save-button:hover {
-	transition: box-shadow;
+    transition: box-shadow;
 	transition-duration: 100ms;
 	box-shadow: 0 0 5px 2px rgba(0, 255, 0, 0.3);
+}
+#save-button:disabled {
+    filter: brightness(45%);   
+    pointer-events: none;
 }
 
 #result-link {
