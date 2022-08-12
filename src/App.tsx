@@ -122,15 +122,7 @@ function FrameSelector({onImageSelected}: FrameSelectorProps) {
 					type="url"
 				/>
 				<div id="gif-url-spinner">{isLoadingUrl && <PropagateLoader id="loader" color="var(--loader-color)"></PropagateLoader>}</div>
-				<div id="url-error">
-					{urlErrorMessage !== UrlErrorMessage.NONE ? (
-						urlErrorMessage
-					) : (
-						<>
-							&nbsp;
-						</>
-					)}
-				</div>
+				<div id="url-error">{urlErrorMessage !== UrlErrorMessage.NONE ? urlErrorMessage : <>&nbsp;</>}</div>
 			</div>
 			<input
 				id="file-select-onclick"
@@ -150,6 +142,7 @@ function FrameSelector({onImageSelected}: FrameSelectorProps) {
 enum ImageLinkState {
 	EMPTY,
 	PROCESSING,
+	UPLOADING,
 	OK,
 	ERR,
 	BACKEND_ERROR,
@@ -196,11 +189,12 @@ function FrameEditor({image, imageLink, imageLinkState, onTextChange, resetImage
 					<button id="reset-button" onClick={resetImage}>
 						Reset
 					</button>
-					<button id="save-button" onClick={saveImage}>
+					<button id="save-button" onClick={saveImage} disabled={[ImageLinkState.PROCESSING, ImageLinkState.UPLOADING].includes(imageLinkState)}>
 						Generate
 					</button>
 				</div>
 				{imageLinkState === ImageLinkState.PROCESSING && <div id="result-link">{"Generating image..."}</div>}
+				{imageLinkState === ImageLinkState.UPLOADING && <div id="result-link">{"Uploading image..."}</div>}
 				{imageLinkState === ImageLinkState.BACKEND_ERROR && (
 					<div id="result-link">
 						{imageLink ? (
@@ -219,7 +213,7 @@ function FrameEditor({image, imageLink, imageLinkState, onTextChange, resetImage
 						)}
 					</div>
 				)}
-				{imageLinkState !== ImageLinkState.EMPTY && imageLinkState !== ImageLinkState.PROCESSING && imageLinkState !== ImageLinkState.BACKEND_ERROR && (
+				{[ImageLinkState.OK, ImageLinkState.ERR].includes(imageLinkState) && (
 					<>
 						<div id="result-link">
 							{imageLink ? (
@@ -273,6 +267,7 @@ function Frame() {
 			windowHeight: 565,
 		}).then(async (captionImage) => {
 			const blob = await renderImage(image!, captionImage.toDataURL());
+			setImageLinkState(ImageLinkState.UPLOADING);
 			const litterboxLink = await uploadToLitterbox(blob, captionElement.innerText);
 			if (litterboxLink) {
 				setImageLinkState(ImageLinkState.OK);
