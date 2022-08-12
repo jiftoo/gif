@@ -70,11 +70,18 @@ export async function renderImage(mainImage: string, captionImage: string): Prom
 			caption.onload = a;
 		}),
 	]);
-	gif.width = Math.max(Config.MIN_WIDTH, gif.width);
 	gif.src = mainImage;
 	caption.src = captionImage;
 	console.log(gif);
 	await promise;
+
+	// Scale to min width and maintain aspect ratio
+	if (gif.width < Config.MIN_WIDTH) {
+		const div = Config.MIN_WIDTH / gif.width;
+		console.log(Config.MIN_WIDTH, gif.width, gif.height);
+		gif.width = Config.MIN_WIDTH;
+		gif.height *= div;
+	}
 
 	const captionAr = caption.width / caption.height;
 	const newCaptionHeight = gif.width * (1 / captionAr); // grey line hack
@@ -113,13 +120,14 @@ async function renderGif(caption: HTMLImageElement, gif: HTMLImageElement, canva
 		console.log("width", canvas.width);
 		console.log("Painting gif frames:", i, "/", frames.length);
 		ctx.drawImage(caption, 0, 0, canvas.width, Math.round(newCaptionHeight));
-		ctx.drawImage(image, 0, newCaptionHeight, Math.max(Config.MIN_WIDTH, image.width), image.height);
+		ctx.drawImage(image, 0, newCaptionHeight, gif.width, gif.height);
 		gifBuilder.addFrame(ctx, {copy: true, delay: delay * 10});
 	});
 
 	return new Promise<Blob>((f) => {
 		gifBuilder.on("progress", (p: number) => console.log("Building gif:", (p * 100).toFixed(1)));
 		gifBuilder.on("finished", (blob: any) => {
+            console.log("finished building", blob)
 			f(blob);
 		});
 		gifBuilder.render();
@@ -134,7 +142,7 @@ async function renderStaticImage(
 	ctx: CanvasRenderingContext2D
 ): Promise<Blob> {
 	ctx.drawImage(caption, 0, 0, canvas.width, newCaptionHeight);
-	ctx.drawImage(gif, 0, newCaptionHeight);
+	ctx.drawImage(gif, 0, newCaptionHeight, gif.width, gif.height);
 
 	const result: Blob = await new Promise((a) => canvas.toBlob((blob) => a(blob!)));
 	return result;
